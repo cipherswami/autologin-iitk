@@ -1,59 +1,89 @@
+##############################################################
+# Author        : Aravind Potluri <aravindswami135@gmail.com>
+# Description   : Auto login script for IITK's firewall 
+#                 authentication page.
+##############################################################
+
+# Required imports
 import urllib.request
-import time
 import urllib.parse
-from bs4 import BeautifulSoup as Soup
+import logging
+import time
+import re
 
-# User input
+# User input for Authentication
 username = 'Fill username'
-password = 'Fill password'
-init_url = 'https://gateway.iitk.ac.in:1003/fgtauth?65ca92cc56aa4562'
+password = 'Fill Password'
+gatway_url ='https://gateway.iitk.ac.in:1003/fgtauth?65c8d5b29dad3c97'
 
-opener = urllib.request.build_opener()
-opener.addheaders = [('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0')]
+# Configuration for logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s')
 
-exit_time = 10 # script exit time in secs
+#### Function declarations ####
+def perform_login(opener, login_url, data, timeout=120):
+    while True:
+        try:
+            login_data = urllib.parse.urlencode(data).encode('utf-8')
+            login_response = opener.open(login_url, login_data)
+            logging.info(f"Connection established: {gatway_url}")
+            logout_url = gatway_url.replace('fgtauth', 'logout')
+            logging.info(f"Generating logout link: {logout_url}")
+            return login_response
+        except Exception as e:
+            if timeout <= 0: break
+            logging.error(f"Retrying, Login failed: {e}")
+            time.sleep(2)
+            timeout -= 2
+    logging.critical(f"Login failed, exiting")
+    logging.critical(f"data: {data}")
+    exit(1)
 
-while True:
-    try:
-        test = opener.open(init_url)
-        print("Connecting...")
-        break
-    except:
-        print("Trying to connect to https://gateway.iitk.ac.in:1003")
-        time.sleep(2)
-        exit_time = exit_time - 2
-        if exit_time < 0: exit(1)
+def keep_alive(opener, url, timeout=120):
+    while True:
+        try:
+            opener.open(url)
+            dead_url = url.replace('keepalive', 'logout')
+            logging.info(f"Authentication refreshed, Logout from here: {dead_url}")
+            time.sleep(2400)
+        except Exception as e:
+            if timeout <= 0: break
+            logging.warning(f"Can't refresh the authentication: {e}")
+            time.sleep(2)
+            timeout -= 2
+    logging.critical(f"Failed to refresh the authentication: {url}")
+    exit(1)
+#### End: Function declarations ####
 
-html = test.read()
-parsed = Soup(html, 'html.parser')
+# Entry Point
+def main():
+    # Create an opener object with custom User-Agent
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0')]
 
-data = {"4Tredir": f"{init_url}", "username": username, "password": password}
-form = parsed.findAll('form')[0]
-magic = form.findAll('input')[1]['value']
-data['magic'] = str(magic)
+    # Payload for login
+    data = {"4Tredir": f"{gatway_url}", "username": username, "password": password, 'magic': gatway_url[-16:]}
 
-time.sleep(2)
-login_data = urllib.parse.urlencode(data).encode('utf-8')
-try:
-    test = opener.open('https://gateway.iitk.ac.in:1003', login_data)
-    print('Connection established')
-except:
-    print('Cannot connect now')
+    # Logging in
+    login_response = perform_login(opener, 'https://gateway.iitk.ac.in:1003', data, 120)
 
-html = test.read()
-
-parsed = Soup(html, 'html.parser')
-script_tag = parsed.find('script', {'language': 'JavaScript'})
-script_content = script_tag.string
-key = script_content.split('?')[1][:-2]
-url = 'https://gateway.iitk.ac.in:1003/keepalive?' + key
-time.sleep(2400)
-
-while True:
-    try:
-        opener.open(url)
-        print('Authentication refreshed... ')
+    #### Keep Alive Section ####
+    # Fetech keep alive url
+    login_response_html = login_response.read().decode('utf-8')
+    keepalive_matches = re.findall(r'window\.location\s*=\s*"([^"]+)"', login_response_html)
+    if keepalive_matches:
+        url = keepalive_matches[0]
+        logging.info(f"Allocatd Keep Alive URL: {url}")
         time.sleep(2400)
-    except:
-        print('Cannot refresh the authentication ', url)
-        time.sleep(10)
+    else:
+        logging.critical("No Keep alive URL found, exiting after this")
+        logging.critical(f"Login Response: {login_response_html}")
+        exit(1)
+    # Keep alive refresher
+    keep_alive(opener, url, 120)
+    #### End: Keep Alive Section ####
+
+if __name__ == "__main__":
+    # Execute the script
+    main()
