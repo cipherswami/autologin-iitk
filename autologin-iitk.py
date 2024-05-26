@@ -4,17 +4,17 @@
 #                 authentication page.
 ##############################################################
 
-# Required imports
-import urllib.request
-import urllib.parse
-import logging
-import time
-import re
+####### User section ###########
+username = 'FILL USERNAME'
+password = 'FILL PASSWORD'
+################################
 
-# User input for Authentication
-username = 'Fill username'
-password = 'Fill Password'
-gatway_url ='https://gateway.iitk.ac.in:1003/fgtauth?65c8d5b29dad3c97'
+# Required imports
+import re
+import time
+import logging
+import urllib.parse
+import urllib.request
 
 # Configuration for logging
 logging.basicConfig(
@@ -22,25 +22,57 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s')
 
 #### Function declarations ####
-def perform_login(opener, login_url, data, timeout=120):
+def get_captive_url(opener, detector_url, timeout=60):
+    """Detect the captive portal URL."""
     while True:
+        if timeout <= 0: break
         try:
-            login_data = urllib.parse.urlencode(data).encode('utf-8')
+            response = opener.open(detector_url)
+            html = response.read().decode('utf-8')
+            match = re.compile(r'window\.location="(https://[^"]+)"').search(html)
+            if match:
+                captive_url = match.group(1)
+                logging.info(f"Found Captive URL with magic token: {captive_url[-16:]}")
+                return captive_url
+            if "url=https://support.mozilla.org/kb/captive-portal" in html:
+                logging.info("Already connected to internet, will retry after 45 mins")
+                time.sleep(2700) # sleep 45 mins
+                timeout -= 3.75 # Equivalent to 1 day
+            else:
+                logging.error("No Captive URL found, exiting")
+                logging.critical(f"Detector Response: {html}")
+                break
+        except Exception as e:
+            logging.error(f"Can't connect to firewall page: {e}")
+            time.sleep(5)
+            timeout -= 5
+    logging.critical(f"Detector URL: {detector_url}")
+    exit(1)
+
+def perform_login(opener, gateway_url, data, timeout=60):
+    """Perform the login to the captive portal."""
+    login_url = gateway_url[:31]
+    login_data = urllib.parse.urlencode(data).encode('utf-8')
+    while True:
+        if timeout <= 0:
+            break
+        try:
             login_response = opener.open(login_url, login_data)
-            logging.info(f"Connection established: {gatway_url}")
-            logout_url = gatway_url.replace('fgtauth', 'logout')
+            logging.info(f"Connection established with url: {login_url}")
+            logout_url = gateway_url.replace('fgtauth', 'logout')
             logging.info(f"Generating logout link: {logout_url}")
             return login_response
         except Exception as e:
-            if timeout <= 0: break
-            logging.error(f"Retrying, Login failed: {e}")
-            time.sleep(2)
-            timeout -= 2
-    logging.critical(f"Login failed, exiting")
-    logging.critical(f"data: {data}")
+            logging.error(f"Login error, retrying again: {e}")
+            time.sleep(5)
+            timeout -= 5
+    logging.critical(f"Login failed")
+    logging.critical(f"Login URL: {login_url}")
+    logging.critical(f"Login Data: {login_data}")
     exit(1)
 
-def keep_alive(opener, url, timeout=120):
+def keep_alive(opener, url, timeout=60):
+    """Keep the authentication alive by periodically accessing the keepalive URL."""
     while True:
         try:
             opener.open(url)
@@ -48,10 +80,11 @@ def keep_alive(opener, url, timeout=120):
             logging.info(f"Authentication refreshed, Logout from here: {dead_url}")
             time.sleep(2400)
         except Exception as e:
-            if timeout <= 0: break
-            logging.warning(f"Can't refresh the authentication: {e}")
-            time.sleep(2)
-            timeout -= 2
+            if timeout <= 0:
+                break
+            logging.error(f"Can't refresh the authentication: {e}")
+            time.sleep(5)
+            timeout -= 5
     logging.critical(f"Failed to refresh the authentication: {url}")
     exit(1)
 #### End: Function declarations ####
@@ -59,30 +92,48 @@ def keep_alive(opener, url, timeout=120):
 # Entry Point
 def main():
     # Create an opener object with custom User-Agent
+    user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0'
     opener = urllib.request.build_opener()
-    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0')]
+    opener.addheaders = [('User-Agent', user_agent)]
+
+    # Get the captive portal URL
+    gateway_url = get_captive_url(opener, 'http://detectportal.firefox.com/canonical.html')
+
+    # Open connection with Gateway
+    init_gateway_response = opener.open(gateway_url)
 
     # Payload for login
-    data = {"4Tredir": f"{gatway_url}", "username": username, "password": password, 'magic': gatway_url[-16:]}
+    data = {
+        "4Tredir": gateway_url,
+        "username": username,
+        "password": password,
+        'magic': gateway_url[-16:]
+    }
 
-    # Logging in
-    login_response = perform_login(opener, 'https://gateway.iitk.ac.in:1003', data, 120)
+    # Log in to Gateway
+    login_response = perform_login(opener, gateway_url, data)
+    login_response_html = login_response.read().decode('utf-8')
+
+    # Closing connections
+    init_gateway_response.close()
+    login_response.close()
 
     #### Keep Alive Section ####
-    # Fetech keep alive url
-    login_response_html = login_response.read().decode('utf-8')
+    # Fetch keep-alive URL
     keepalive_matches = re.findall(r'window\.location\s*=\s*"([^"]+)"', login_response_html)
     if keepalive_matches:
-        url = keepalive_matches[0]
-        logging.info(f"Allocatd Keep Alive URL: {url}")
-        time.sleep(2400)
+        keep_alive_url = keepalive_matches[0]
+        logging.info(f"Received Keep alive token: {keep_alive_url[-16:]}")
+        time.sleep(7190) # wait for nearly 2 hrs
     else:
-        logging.critical("No Keep alive URL found, exiting after this")
+        logging.error("No Keep alive URL found, will exit after this session")
         logging.critical(f"Login Response: {login_response_html}")
         exit(1)
+    
     # Keep alive refresher
-    keep_alive(opener, url, 120)
+    keep_alive(opener, gateway_url)
     #### End: Keep Alive Section ####
+    exit(0)
 
 if __name__ == "__main__":
     # Execute the script
