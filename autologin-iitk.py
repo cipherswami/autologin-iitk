@@ -19,7 +19,7 @@ import urllib.request
 # Configuration for logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s')
+    format='%(levelname)s - %(message)s')
 
 #### Function declarations ####
 def get_captive_url(opener, detector_url, timeout=60):
@@ -35,9 +35,9 @@ def get_captive_url(opener, detector_url, timeout=60):
                 logging.info(f"Found Captive URL with magic token: {captive_url[-16:]}")
                 return captive_url
             if "url=https://support.mozilla.org/kb/captive-portal" in html:
-                logging.info("Already connected to internet, will retry after 45 mins")
-                time.sleep(2700) # sleep 45 mins
-                timeout -= 3.75 # Equivalent to 1 day
+                logging.info("Already connected to internet, will retry after 15 mins")
+                time.sleep(900) # sleep 15 mins
+                timeout -= 1.2 # Equivalent to 1 day
             else:
                 logging.error("No Captive URL found, exiting")
                 logging.critical(f"Detector Response: {html}")
@@ -54,8 +54,7 @@ def perform_login(opener, gateway_url, data, timeout=60):
     login_url = gateway_url[:31]
     login_data = urllib.parse.urlencode(data).encode('utf-8')
     while True:
-        if timeout <= 0:
-            break
+        if timeout <= 0: break
         try:
             login_response = opener.open(login_url, login_data)
             logging.info(f"Connection established with url: {login_url}")
@@ -66,22 +65,19 @@ def perform_login(opener, gateway_url, data, timeout=60):
             logging.error(f"Login error, retrying again: {e}")
             time.sleep(5)
             timeout -= 5
-    logging.critical(f"Login failed")
-    logging.critical(f"Login URL: {login_url}")
-    logging.critical(f"Login Data: {login_data}")
+    logging.critical(f"Login failed with URL: {login_url}")
     exit(1)
 
 def keep_alive(opener, url, timeout=60):
     """Keep the authentication alive by periodically accessing the keepalive URL."""
     while True:
+        if timeout <= 0: break
         try:
             opener.open(url)
             dead_url = url.replace('keepalive', 'logout')
             logging.info(f"Authentication refreshed, Logout from here: {dead_url}")
-            time.sleep(2400)
+            time.sleep(7190)
         except Exception as e:
-            if timeout <= 0:
-                break
             logging.error(f"Can't refresh the authentication: {e}")
             time.sleep(5)
             timeout -= 5
@@ -131,7 +127,7 @@ def main():
         exit(1)
     
     # Keep alive refresher
-    keep_alive(opener, gateway_url)
+    keep_alive(opener, keep_alive_url)
     #### End: Keep Alive Section ####
     exit(0)
 
