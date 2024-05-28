@@ -5,6 +5,7 @@
 ##############################################################
 
 ####### User section #########################
+# Please update these variables with your credentials
 username = 'FILL USERNAME'
 password = 'FILL PASSWORD'
 # NOTE: Enter webmail password, not WiFi SSO
@@ -24,19 +25,18 @@ logging.basicConfig(
 
 #### Function declarations ####
 def check_creds(username, password, response):
+    """Check if the provided credentials are valid."""
     if "Firewall authentication failed. Please try again." in response:
-        logging.error("Please check the credentials you entered,")
-        logging.error("You can directly reinstall with the correct credentials; it will be overwritten")
+        logging.critical("Please check the credentials you entered.")
     elif "keepalive" in response:
         return
     else:
-        logging.critical(f"Response: {response}")
+        logging.critical("Unexpected error, Response: {response}")
     exit(1)
 
 def get_captive_url(opener, detector_url, timeout=60):
     """Detect the captive portal URL."""
-    while True:
-        if timeout <= 0: break
+    while timeout > 0:
         try:
             response = opener.open(detector_url)
             html = response.read().decode('utf-8')
@@ -46,11 +46,11 @@ def get_captive_url(opener, detector_url, timeout=60):
                 logging.info(f"Found Captive URL with magic token: {captive_url[-16:]}")
                 return captive_url
             if "url=https://support.mozilla.org/kb/captive-portal" in html:
-                logging.info("Already connected to internet, will retry after 15 mins")
+                logging.info("Already connected to internet, will retry after 15 mins.")
                 time.sleep(900) # sleep 15 mins
-                timeout -= 1.2 # Equivalent to 1 day
+                timeout -= 900
             else:
-                logging.error("No Captive URL found, exiting")
+                logging.error("No Captive URL found, exiting.")
                 logging.critical(f"Detector Response: {html}")
                 break
         except Exception as e:
@@ -64,18 +64,17 @@ def perform_login(opener, gateway_url, data, timeout=60):
     """Perform the login to the captive portal."""
     login_url = gateway_url[:31]
     login_data = urllib.parse.urlencode(data).encode('utf-8')
-    while True:
-        if timeout <= 0: break
+    while timeout > 0:
         try:
             login_response = opener.open(login_url, login_data)
             login_response_html = login_response.read().decode('utf-8')
             check_creds(username, password, login_response_html)
-            logging.info(f"Connection established with url: {login_url}")
+            logging.info(f"Connection established with URL: {login_url}")
             logout_url = gateway_url.replace('fgtauth', 'logout')
             logging.info(f"Generating logout link: {logout_url}")
             return login_response_html
         except Exception as e:
-            logging.error(f"Login error, retrying again: {e}")
+            logging.error(f"Login error, retrying: {e}")
             time.sleep(5)
             timeout -= 5
     logging.critical(f"Login failed with URL: {login_url}")
@@ -83,12 +82,11 @@ def perform_login(opener, gateway_url, data, timeout=60):
 
 def keep_alive(opener, url, timeout=60):
     """Keep the authentication alive by periodically accessing the keepalive URL."""
-    while True:
-        if timeout <= 0: break
+    while timeout > 0:
         try:
             opener.open(url)
             dead_url = url.replace('keepalive', 'logout')
-            logging.info(f"Authentication refreshed, Logout from here: {dead_url}")
+            logging.info(f"Authentication refreshed, logout from here: {dead_url}")
             time.sleep(7190)
         except Exception as e:
             logging.error(f"Can't refresh the authentication: {e}")
@@ -133,7 +131,7 @@ def main():
         logging.info(f"Received Keep alive token: {keep_alive_url[-16:]}")
         time.sleep(7190) # wait for nearly 2 hrs
     else:
-        logging.error("No Keep alive URL found, will exit after this session")
+        logging.error("No Keep alive URL found, will exit after this session.")
         logging.critical(f"Login Response: {login_response_html}")
         exit(1)
     

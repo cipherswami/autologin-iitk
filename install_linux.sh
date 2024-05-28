@@ -3,7 +3,7 @@
 ##############################################################
 # Author        : Aravind Potluri <aravindswami135@gmail.com>
 # Description   : Installation script for autologin-iitk.
-# Distrubuiton  : All systemd enabled linux OS.
+# Distribution  : All systemd enabled Linux OS.
 ##############################################################
 
 # Function to display banner
@@ -31,6 +31,14 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Check if Python3 is installed
+if [ -z "$PYTHON_PATH" ]; then
+    echo ""
+    echo "[!] Python3 is not installed. Please install it and try again." 1>&2
+    echo ""
+    exit 1
+fi
+
 # Display banner
 banner
 
@@ -38,14 +46,25 @@ echo ""
 
 # Copy the Python script to /usr/local/bin and make it executable
 echo "[+] Copying $SCRIPT_NAME to $SCRIPT_PATH"
-cp "$SCRIPT_NAME" "$SCRIPT_PATH"
-chmod +x "$SCRIPT_PATH"
+if cp "$SCRIPT_NAME" "$SCRIPT_PATH"; then
+    echo "[+] Successfully copied $SCRIPT_NAME"
+else
+    echo "[!] Failed to copy $SCRIPT_NAME" 1>&2
+    exit 1
+fi
+
+if chmod +x "$SCRIPT_PATH"; then
+    echo "[+] Made $SCRIPT_PATH executable"
+else
+    echo "[!] Failed to make $SCRIPT_PATH executable" 1>&2
+    exit 1
+fi
 
 echo ""
 
 # Create the systemd service file
 echo "[+] Creating systemd service file at $SERVICE_PATH"
-cat <<EOL > "$SERVICE_PATH"
+if cat <<EOL > "$SERVICE_PATH"
 [Unit]
 After=network.target
 
@@ -57,22 +76,43 @@ Group=root
 [Install]
 WantedBy=multi-user.target
 EOL
+then
+    echo "[+] Successfully created $SERVICE_PATH"
+else
+    echo "[!] Failed to create $SERVICE_PATH" 1>&2
+    exit 1
+fi
 
 echo ""
 
 # Reload systemd, enable and start the service
 echo "[+] Reloading systemd daemon"
-systemctl daemon-reload
+if systemctl daemon-reload; then
+    echo "[+] Successfully reloaded systemd daemon"
+else
+    echo "[!] Failed to reload systemd daemon" 1>&2
+    exit 1
+fi
 
 echo ""
 
 echo "[+] Enabling the $SERVICE_NAME, to run at boot"
-systemctl enable "$SERVICE_NAME"
+if systemctl enable "$SERVICE_NAME"; then
+    echo "[+] Successfully enabled $SERVICE_NAME"
+else
+    echo "[!] Failed to enable $SERVICE_NAME" 1>&2
+    exit 1
+fi
 
 echo ""
 
 echo "[+] Starting the $SERVICE_NAME"
-systemctl start "$SERVICE_NAME"
+if systemctl start "$SERVICE_NAME"; then
+    echo "[+] Successfully started $SERVICE_NAME"
+else
+    echo "[!] Failed to start $SERVICE_NAME" 1>&2
+    exit 1
+fi
 
 echo ""
 
