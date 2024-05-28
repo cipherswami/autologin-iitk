@@ -4,10 +4,11 @@
 #                 authentication page.
 ##############################################################
 
-####### User section ###########
+####### User section #########################
 username = 'FILL USERNAME'
 password = 'FILL PASSWORD'
-################################
+# NOTE: Enter webmail password, not WiFi SSO
+#############################################
 
 # Required imports
 import re
@@ -22,6 +23,16 @@ logging.basicConfig(
     format='%(levelname)s - %(message)s')
 
 #### Function declarations ####
+def check_creds(username, password, response):
+    if "Firewall authentication failed. Please try again." in response:
+        logging.error("Please check the credentials you entered,")
+        logging.error("You can directly reinstall with the correct credentials; it will be overwritten")
+    elif "keepalive" in response:
+        return
+    else:
+        logging.critical(f"Response: {response}")
+    exit(1)
+
 def get_captive_url(opener, detector_url, timeout=60):
     """Detect the captive portal URL."""
     while True:
@@ -57,10 +68,12 @@ def perform_login(opener, gateway_url, data, timeout=60):
         if timeout <= 0: break
         try:
             login_response = opener.open(login_url, login_data)
+            login_response_html = login_response.read().decode('utf-8')
+            check_creds(username, password, login_response_html)
             logging.info(f"Connection established with url: {login_url}")
             logout_url = gateway_url.replace('fgtauth', 'logout')
             logging.info(f"Generating logout link: {logout_url}")
-            return login_response
+            return login_response_html
         except Exception as e:
             logging.error(f"Login error, retrying again: {e}")
             time.sleep(5)
@@ -107,12 +120,10 @@ def main():
     }
 
     # Log in to Gateway
-    login_response = perform_login(opener, gateway_url, data)
-    login_response_html = login_response.read().decode('utf-8')
+    login_response_html = perform_login(opener, gateway_url, data)
 
     # Closing connections
     init_gateway_response.close()
-    login_response.close()
 
     #### Keep Alive Section ####
     # Fetch keep-alive URL
