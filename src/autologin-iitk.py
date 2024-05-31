@@ -21,7 +21,7 @@ import urllib.request
 # Configuration for logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(levelname)s - %(message)s')
+    format='[%(asctime)s] %(levelname)s - %(message)s')
 
 #### Function declarations ####
 def check_creds(username, password, response):
