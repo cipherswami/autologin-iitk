@@ -18,6 +18,7 @@ function banner {
 
 # Variables
 SCRIPT_NAME="autologin-iitk.py"
+SCRIPT_LOCATION="../src"
 SCRIPT_PATH="/usr/local/bin/$SCRIPT_NAME"
 PYTHON_PATH=$(which python3)
 SERVICE_NAME="${SCRIPT_NAME::-3}.service"
@@ -46,7 +47,7 @@ echo ""
 
 # Copy the Python script to /usr/local/bin and make it executable
 echo "[+] Copying $SCRIPT_NAME to $SCRIPT_PATH"
-if cp "$SCRIPT_NAME" "$SCRIPT_PATH"; then
+if cp "$SCRIPT_LOCATION/$SCRIPT_NAME" "$SCRIPT_PATH"; then
     echo "[+] Successfully copied $SCRIPT_NAME"
 else
     echo "[!] Failed to copy $SCRIPT_NAME" 1>&2

@@ -5,7 +5,6 @@
 ##############################################################
 
 ####### User section #########################
-# Please update these variables with your credentials
 username = 'FILL USERNAME'
 password = 'FILL PASSWORD'
 # NOTE: Enter webmail password, not WiFi SSO
@@ -15,13 +14,20 @@ password = 'FILL PASSWORD'
 import re
 import time
 import logging
+import platform
 import urllib.parse
 import urllib.request
+
+# Assessing the platfrom
+if platform.system() == 'Linux':
+    format='%(levelname)s - %(message)s'
+else:
+    format='[%(asctime)s] %(levelname)s - %(message)s'
 
 # Configuration for logging
 logging.basicConfig(
     level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s - %(message)s')
+    format=format)
 
 #### Function declarations ####
 def check_creds(username, password, response):

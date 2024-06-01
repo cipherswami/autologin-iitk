@@ -41,6 +41,7 @@ if systemctl stop "$SERVICE_NAME"; then
     echo "[+] Successfully stopped $SERVICE_NAME"
 else
     echo "[!] Failed to stop $SERVICE_NAME or it may not be running" 1>&2
+    exit 1
 fi
 
 echo ""
@@ -51,6 +52,7 @@ if systemctl disable "$SERVICE_NAME"; then
     echo "[+] Successfully disabled $SERVICE_NAME"
 else
     echo "[!] Failed to disable $SERVICE_NAME" 1>&2
+    exit 1
 fi
 
 echo ""
@@ -62,6 +64,7 @@ if [ -f "$SERVICE_PATH" ]; then
         echo "[+] Successfully removed $SERVICE_PATH"
     else
         echo "[!] Failed to remove $SERVICE_PATH" 1>&2
+        exit 1
     fi
 else
     echo "[!] Service file $SERVICE_PATH does not exist"
@@ -86,6 +89,7 @@ if [ -f "$SCRIPT_PATH" ]; then
         echo "[+] Successfully removed $SCRIPT_PATH"
     else
         echo "[!] Failed to remove $SCRIPT_PATH" 1>&2
+        exit 1
     fi
 else
     echo "[!] Script file $SCRIPT_PATH does not exist"
