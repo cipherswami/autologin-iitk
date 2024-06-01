@@ -63,6 +63,9 @@ def get_captive_url(opener, detector_url, timeout=60):
             logging.error(f"Can't connect to firewall page: {e}")
             time.sleep(5)
             timeout -= 5
+        except KeyboardInterrupt:
+            logging.info("Received Temination signal, exiting...")
+            exit(0)
     logging.critical(f"Detector URL: {detector_url}")
     exit(1)
 
@@ -83,6 +86,9 @@ def perform_login(opener, gateway_url, data, timeout=60):
             logging.error(f"Login error, retrying: {e}")
             time.sleep(5)
             timeout -= 5
+        except KeyboardInterrupt:
+            logging.info("Received Temination signal, exiting...")
+            exit(0)
     logging.critical(f"Login failed with URL: {login_url}")
     exit(1)
 
@@ -98,6 +104,9 @@ def keep_alive(opener, url, timeout=60):
             logging.error(f"Can't refresh the authentication: {e}")
             time.sleep(5)
             timeout -= 5
+        except KeyboardInterrupt:
+            logging.info("Received Temination signal, exiting...")
+            exit(0)
     logging.critical(f"Failed to refresh the authentication: {url}")
     exit(1)
 #### End: Function declarations ####
@@ -131,16 +140,19 @@ def main():
 
     #### Keep Alive Section ####
     # Fetch keep-alive URL
-    keepalive_matches = re.findall(r'window\.location\s*=\s*"([^"]+)"', login_response_html)
-    if keepalive_matches:
-        keep_alive_url = keepalive_matches[0]
-        logging.info(f"Received Keep alive token: {keep_alive_url[-16:]}")
-        time.sleep(7190) # wait for nearly 2 hrs
-    else:
-        logging.error("No Keep alive URL found, will exit after this session.")
-        logging.critical(f"Login Response: {login_response_html}")
-        exit(1)
-    
+    try:
+        keepalive_matches = re.findall(r'window\.location\s*=\s*"([^"]+)"', login_response_html)
+        if keepalive_matches:
+            keep_alive_url = keepalive_matches[0]
+            logging.info(f"Received Keep alive token: {keep_alive_url[-16:]}")
+            time.sleep(7190) # wait for nearly 2 hrs
+        else:
+            logging.error("No Keep alive URL found, will exit after this session.")
+            logging.critical(f"Login Response: {login_response_html}")
+            exit(1)
+    except KeyboardInterrupt:
+        logging.info("Received Temination signal, exiting...")
+        exit(0)
     # Keep alive refresher
     keep_alive(opener, keep_alive_url)
     #### End: Keep Alive Section ####
