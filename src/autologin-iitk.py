@@ -54,7 +54,7 @@ def get_captive_url(opener, detector_url, timeout=60):
             if "url=https://support.mozilla.org/kb/captive-portal" in html:
                 logging.info("Already connected to internet, will retry after 15 mins.")
                 time.sleep(900) # sleep 15 mins
-                timeout -= 900
+                timeout -= 5 # 60/5 = 12 -> 12*900 = 10800 sec (3 Hrs)
             else:
                 logging.error("No Captive URL found, exiting.")
                 logging.critical(f"Detector Response: {html}")

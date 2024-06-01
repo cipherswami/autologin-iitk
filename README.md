@@ -44,7 +44,7 @@
 
 ### Installation
 
-- Navigate to the *linux* folder to find the installation script:
+- In autologin-iitk folder, navigate to the *linux* folder to find the installation script:
   
     ```sh
     cd linux
@@ -57,13 +57,15 @@
     sudo ./install.sh
     ```
 
-- et voilà!, installation is done.
+- et voilà! installation is done.
 
-- Now, check out [Additional info](#additional-info).
+- 😁 Please give this Repo a star if you found it useful.
+
+- And check out [Additional info](#additional-info).
   
 ### Uninstallation
 
-- Navigate to the *linux* folder to find the uninstallation script.
+- In autologin-iitk folder, navigate to the *linux* folder to find the uninstallation script.
 
 - Now, grant executable permissions and run the uninstall script:
 
@@ -76,17 +78,19 @@
 
 ### Installation
 
-- Navigate to the *windows* folder to find the installation batch file.
+- In autologin-iitk folder, navigate to the *windows* folder to find the installation batch file.
   
 - Now, right-click `install.bat` and run it as administrator.
 
-- et voilà!, installation is done.
+- et voilà! installation is done.
 
-- Now, check out [Additional info](#additional-info).
+- 😁 Please give this Repo a star if you found it useful.
+
+- And check out [Additional info](#additional-info).
 
 ### Uninstallation
 
-- Navigate to the *windows* folder to find the uninstallation batch file.
+- In autologin-iitk folder, navigate to the *windows* folder to find the uninstallation batch file.
   
 - Now, right-click `uninstall.bat` and run it as administrator.
 
@@ -94,7 +98,7 @@
 
 ### Installation
 
-- 🥲🤣 I'm not rich enough to afford Apple products. You guys, please find a way to install the below command as a service or simply put it as a startup command:
+- 🥲 🤣 I'm not rich enough to afford Apple products. You guys, please find a way to install the below command as a service or simply put it as a startup command:
 
     ```sh
     python path-to-script/autologin-iitk.py
@@ -102,7 +106,7 @@
 
 ### Uninstallation
 
-- Simply undo what you did 😜.
+- 😜 Simply undo what you did.
 
 ## Additional Info:
 
@@ -110,14 +114,15 @@
 
 - There is a possibility of a maximum downtime of 15 minutes in case reboots are involved, as it doesn't store the last authentication instance. 
 
-- In such cases, you can restart the service:
+- In such cases, you can restart the service and check logs as follow:
 
   - **Linux**: 
     - In bash terminal execute - `service autologin-iitk restart`
+    - For logs, execute - `journalctl -u autologin-iitk`
   
   - **Windows**: 
     - In powershell execute - `Restart-Service -Name "autologin-iitk" -Force` (or) you can do it from `services.msc`
-
+    - For logs, execute - `Get-Content C:\Users\$envs:USERNAME\AppData\Local\auotologin-iitk\autologin-iitk.log`
 
 # People
 
