@@ -85,7 +85,7 @@
 
 - And check out [Additional info](#additional-info).
 
-**NOTE**: In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace it with the 64-bit new version under the same name (nssm.exe), then do the installation.
+**NOTE**: In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace the old one with the new 64-bit version under the same name (nssm.exe), then do the installation.
 
 ### Uninstallation
 
