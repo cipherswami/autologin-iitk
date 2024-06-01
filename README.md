@@ -1,20 +1,29 @@
-# Introduction
+# Autologin IITK :: CIPH3R
+
+## Introduction
 
 `autologin-iitk` is a Python script designed to automate the login process for IIT Kanpur's firewall authentication page. This script continuously checks for the captive portal, performs login, and keeps the session alive to maintain internet connectivity without manual intervention.
 
-# Features
+## Motive
 
-- Automatic detection and login to the firewall authentication page.
-- Periodic keep-alive requests to maintain the session.
-- Self-termination in extreme cases.
-
-# Prerequisites
-
-- Python 3 with properly set environment path.
+- Servers and most of the computers in labs are connected via LAN and require login to the Firewall page at every boot. To automate this process, this script was created.
+- Sometimes, for certain PCs, we might need to connect to **iitk** WiFi only, again for which the firewall page is necessary. Hence, `autologin-iitk`.
 
 # Setup and Installation
 
-- **Edit the `autologin-iitk.py` file** to add your username and password:
+### Pre Requisites:
+
+- Python 3 with properly set environment **PATH** variable.
+
+### Pre Installation Setup:
+
+- Clone the repository via Git (or) download the zip from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and navigate into the autologin-iitk directory:
+
+    ```sh
+    git clone https://github.com/cipherswami/autologin-iitk.git
+    ```
+
+- Now, edit the `autologin-iitk.py` file in the **src** folder to add your username and password:
 
     ```python
     ####### User section #########################
@@ -24,46 +33,91 @@
     #############################################
     ```
 
-## Linux
 ### Installation
 
-1. **Clone the repository or [download](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main) the zip directly, and navigate to the directory**:
+- Please refer the corresponding sections for installation instructions:
+  - [Linux](#linux)
+  - [Windows](#windows)
+  - [MacOS](#macos)
 
+## Linux
+
+### Installation
+
+- Navigate to the *linux* folder to find the installation script:
+  
     ```sh
-    git clone https://github.com/cipherswami/autologin-iitk.git
+    cd linux
     ```
 
-2. **Run the install script** as root:
+- Now, grant executable permissions and run the install script:
 
     ```sh
-    chmod +x install_linux.sh
-    sudo ./install_linux.sh
+    chmod +x install.sh
+    sudo ./install.sh
     ```
 
-    The install script will:
-    - Copy `autologin-iitk.py` to `/usr/local/bin/`.
-    - Create a systemd service file, enable it to run at boot, and start the service.
+- et voilà!, installation is done.
 
+- Now, check out [Additional info](#additional-info).
+  
 ### Uninstallation
 
-1. **Run the uninstall script** as root:
+- Navigate to the *linux* folder to find the uninstallation script.
+
+- Now, grant executable permissions and run the uninstall script:
 
     ```sh
+    chmod +x uninstall.sh
     sudo ./uninstall.sh
     ```
 
-    The uninstall script will:
-    - Stop and disable the systemd service.
-    - Remove the systemd service file.
-    - Remove `autologin-iitk.py` from `/usr/local/bin/`.
+## Windows
 
-## Windows and MacOS
+### Installation
 
-- As of now, just add the following command as a startup script:
+- Navigate to the *windows* folder to find the installation batch file.
+  
+- Now, right-click `install.bat` and run it as administrator.
+
+- et voilà!, installation is done.
+
+- Now, check out [Additional info](#additional-info).
+
+### Uninstallation
+
+- Navigate to the *windows* folder to find the uninstallation batch file.
+  
+- Now, right-click `uninstall.bat` and run it as administrator.
+
+## MacOS
+
+### Installation
+
+- 🥲🤣 I'm not rich enough to afford Apple products. You guys, please find a way to install the below command as a service or simply put it as a startup command:
 
     ```sh
     python path-to-script/autologin-iitk.py
     ```
+
+### Uninstallation
+
+- Simply undo what you did 😜.
+
+## Additional Info:
+
+- The script is designed to self-terminate after 3 Hrs in the case of failures or when you are already connected to internet beyond refresh time (2 Hrs).
+
+- There is a possibility of a maximum downtime of 15 minutes in case reboots are involved, as it doesn't store the last authentication instance. 
+
+- In such cases, you can restart the service:
+
+  - **Linux**: 
+    - In bash terminal execute - `service autologin-iitk restart`
+  
+  - **Windows**: 
+    - In powershell execute - `Restart-Service -Name "autologin-iitk" -Force` (or) you can do it from `services.msc`
+
 
 # People
 
@@ -71,7 +125,7 @@
 - Aravind Potluri \<aravindswami135@gmail.com\>
 
 ### Contributors
-- Abhinav Anand (CSE IITK)
+- Abhinav Anand (CSE IITK): Thanks for providing the inital basic script - v1.0.0.
 
 ## License
 
