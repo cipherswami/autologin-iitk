@@ -17,7 +17,7 @@
 
 ### Pre Installation Setup:
 
-- Clone the repository via Git (or) download the zip from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and navigate into the autologin-iitk directory:
+- Git clone the repository (or) download the zip from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and navigate into the autologin-iitk directory:
 
     ```sh
     git clone https://github.com/cipherswami/autologin-iitk.git
@@ -35,10 +35,7 @@
 
 ### Installation
 
-- Please refer the corresponding sections for installation instructions:
-  - [Linux](#linux)
-  - [Windows](#windows)
-  - [MacOS](#macos)
+- Please refer to the following sections for Linux, Windows, and MacOS installation instructions:
 
 ## Linux
 
@@ -108,7 +105,7 @@
 
 - 😜 Simply undo what you did.
 
-## Additional Info:
+# Additional Info
 
 - The script is designed to self-terminate after 3 Hrs in the case of failures or when you are already connected to internet beyond refresh time (2 Hrs).
 
@@ -132,7 +129,7 @@
 ### Contributors
 - Abhinav Anand (CSE IITK): Thanks for providing the inital basic script - v1.0.0.
 
-## License
+# License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
