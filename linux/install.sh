@@ -20,7 +20,7 @@ function banner {
 SCRIPT_NAME="autologin-iitk.py"
 SCRIPT_LOCATION="../src"
 SCRIPT_PATH="/usr/local/bin/$SCRIPT_NAME"
-PYTHON_PATH=$(which python3)
+PYTHON_PATH=python3
 SERVICE_NAME="${SCRIPT_NAME::-3}.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 

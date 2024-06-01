@@ -85,6 +85,8 @@
 
 - And check out [Additional info](#additional-info).
 
+**NOTE**: In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace it with the 64-bit new version under the same name (nssm.exe), then do the installation.
+
 ### Uninstallation
 
 - In autologin-iitk folder, navigate to the *windows* folder to find the uninstallation batch file.
