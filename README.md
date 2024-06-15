@@ -14,7 +14,7 @@
 
 ### Pre Requisites:
 
-- (Python 3) - Execute the following command in terminal should ouput python version; then you are good to go:
+- (Python 3) - If executing the following command in terminal ouputs python version; then you are good to go:
 
     - Windows
 
@@ -27,7 +27,7 @@
         python3 --version
         ```
 
-- Else, download latest version of python from [here](https://www.python.org/downloads). And don't for get add python to environment PATH variable.
+- Else, download latest version of python from [here](https://www.python.org/downloads). And don't forget to add python to environment PATH variable.
 
 ### Pre Installation:
 
@@ -59,15 +59,15 @@
 
 ### Installation
 
-- Inside the downloaded or cloned repository, navigate into the ***windows*** folder to find the installation batch file.
+- Inside the downloaded or cloned repository, navigate to the ***windows*** folder to find the installation batch file.
   
-- Now, right-click on `install.bat` and run it as **Administrator**.
+- Now, right-click on the `install.bat` and run it as **Administrator**.
 
-- If you encounter **Windows protected your PC** popup, click on `More info` and then choose `Run anyway` (or) If you see an **Unknown publisher** popup, simply choose `Run`.
+- If you encounter **Windows protected your PC** popup, click on `More info` and then choose `Run anyway` (or) If you see any **Unknown publisher** popup, simply choose `Run`.
 
   - NOTE: This is a simple installer script; there is no need to worry about any viruses. The entire code is open source, so you can review it if you wish.
 
-- Open powersehll as **Administrator** and execute below command to start the service.
+- Now, open powersehll as **Administrator** and execute below command to start the service.
   
     ```powershell
     Start-Service -Name "autologin-iitk"
@@ -87,19 +87,21 @@
   
 - Now, right-click on the `uninstall.bat` and run it as administrator.
 
+- If you encounter **Windows protected your PC** popup, click on `More info` and then choose `Run anyway` (or) If you see any **Unknown publisher** popup, simply choose `Run`.
+
   - NOTE: This is a simple uninstaller script; there is no need to worry about any viruses.
 
 ## Linux 
 
 ### Installation
 
-- Inside the downloaded or cloned repository, open a terminal and navigate to the linux folder to locate the installation script:
+- Inside the downloaded or cloned repository, open a terminal and navigate to the linux folder to find the installation script:
   
     ```sh
     cd linux
     ```
 
-- Now, grant executable permissions and run the install script:
+- Now, grant executable permissions and run the installer script:
 
     ```sh
     chmod +x install.sh
@@ -116,7 +118,7 @@
 
 - In autologin-iitk folder, navigate to the *linux* folder to find the uninstallation script.
 
-- Now, grant executable permissions and run the uninstall script:
+- Now, grant executable permissions and run the uninstaller script:
 
     ```sh
     chmod +x uninstall.sh
@@ -144,7 +146,7 @@
 
 - There is a possibility of a maximum downtime of 15 minutes in case reboots are involved, as it doesn't store the last authentication time. 
 
-- In such cases, you can simply restart the service with the former command below. To check logs, use the later command below:
+- In such cases, you can simply restart the service with the below command (former). And for checking logs, you can use the below command (latter):
 
   - **Windows** (In powershell): 
   
