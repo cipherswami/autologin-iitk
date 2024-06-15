@@ -67,7 +67,7 @@
 
   - NOTE: This is a simple installer script; there is no need to worry about any viruses. The entire code is open source, so you can review it if you wish.
 
-- Now, open powersehll as **Administrator** and execute below command to start the service.
+- Now, open powersehll as **Administrator** and execute below command (or) use `services.msc` to start the service.
   
     ```powershell
     Start-Service -Name "autologin-iitk"
@@ -150,7 +150,7 @@
 
   - **Windows** (In powershell): 
   
-    - For restarting, execute below command (or) you can do it from `services.msc`: 
+    - For restarting (powershell must be runas **Administrator**), execute below command (or) you can do it from `services.msc`: 
 
         ```powershell
         Restart-Service -Name "autologin-iitk" -Force
@@ -164,10 +164,10 @@
 
   - **Linux** (In bash shell): 
   
-    - For restarting, execute: 
+    - For restarting (need **sudo** privileges), execute: 
 
         ```sh
-        service autologin-iitk restart
+        sudo service autologin-iitk restart
         ```
 
     - For logs, execute:

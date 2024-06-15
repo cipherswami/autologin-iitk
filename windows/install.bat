@@ -12,7 +12,7 @@ setlocal
 set "SERVICE_NAME=autologin-iitk"
 set "SCRIPT_FILE=autologin-iitk.py"
 set "SCRIPT_FILE_LOCATION=..\src"
-set "DESCRIPTION=Auto login script for IITK's firewall authentication page"
+set "DESCRIPTION=Auto login script for IITK's firewall authentication page."
 set "INSTALL_DIR=C:\Users\%USERNAME%\AppData\Local\%SERVICE_NAME%"
 set "NSSM_DIR=C:\Users\%USERNAME%\AppData\Local\nssm"
 set "APPLICATION_TO_RUN=python"
