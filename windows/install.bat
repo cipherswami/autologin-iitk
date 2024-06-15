@@ -159,13 +159,13 @@ REM Set service to start automatically
     exit /b 1
 )
 
-REM Start the service
-"%NSSM_DIR%\nssm.exe" start "%SERVICE_NAME%" || (
-    echo Error: Failed to start the service.
-    echo.
-    pause
-    exit /b 1
-)
+@REM REM Start the service
+@REM "%NSSM_DIR%\nssm.exe" start "%SERVICE_NAME%" || (
+@REM     echo Error: Failed to start the service.
+@REM     echo.
+@REM     pause
+@REM     exit /b 1
+@REM )
 
 echo.
 echo [#] Installation complete

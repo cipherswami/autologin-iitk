@@ -2,28 +2,42 @@
 
 ## Introduction
 
-`autologin-iitk` is a Python script designed to automate the login process for IIT Kanpur's firewall authentication page. This script continuously checks for the captive portal, performs login, and keeps the session alive to maintain internet connectivity without manual intervention.
+`autologin-iitk` is a Python script designed to automate the login process for IIT Kanpur's firewall authentication page. This script continuously checks for the firewall authentication portal, performs login, and keeps the session alive to maintain internet connectivity without manual intervention.
 
 ## Motive
 
-- Servers and most of the computers in labs are connected via LAN and require login to the Firewall page at every boot. To automate this process, this script was created.
-- Sometimes, for certain PCs, we might need to connect to **iitk** WiFi only, again for which the firewall page is necessary. Hence, `autologin-iitk`.
+- Servers and most of the computers in labs are connected via LAN and require login to the firewall authentication page at every boot. To automate this process, this script was made.
 
-# Setup and Installation
+- We might need to connect exclusively to the '**iitk**' WiFi SSID in some cases, which again requires logging in to the firewall authentication page. Hence, `autologin-iitk`.
+
+# Installation
 
 ### Pre Requisites:
 
-- Python 3 with properly set environment **PATH** variable.
+- (Python 3) - Execute the following command in terminal should ouput python version; then you are good to go:
 
-### Pre Installation Setup:
+    - Windows
 
-- Git clone the repository (or) download the zip from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and navigate into the autologin-iitk directory:
+        ```sh
+        python --version
+        ```
+    - Linux & Mac
+
+        ```sh
+        python3 --version
+        ```
+
+- Else, download latest version of python from [here](https://www.python.org/downloads). And don't for get add python to environment PATH variable.
+
+### Pre Installation:
+
+- Download the latest ZIP file from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and extract it (or) Git clone the repository:
 
     ```sh
     git clone https://github.com/cipherswami/autologin-iitk.git
     ```
 
-- Now, edit the `autologin-iitk.py` file in the **src** folder to add your username and password:
+- Now, go to the extracted or cloned directory. Edit the `autologin-iitk.py` file in the **src** folder to add your username and password:
 
     ```python
     ####### User section #########################
@@ -33,15 +47,53 @@
     #############################################
     ```
 
+### Main Installation
+
+- Please refer to the corresponding sections below for installation instructions:
+
+  -  [Windows](#windows)
+  -  [Linux](#linux)
+  -  [MacOS](#macos)
+
+## Windows 
+
 ### Installation
 
-- Please refer to the following sections for Linux, Windows, and MacOS installation instructions:
+- Inside the downloaded or cloned repository, navigate into the ***windows*** folder to find the installation batch file.
+  
+- Now, right-click on `install.bat` and run it as **Administrator**.
 
-## Linux
+- If you encounter **Windows protected your PC** popup, click on `More info` and then choose `Run anyway` (or) If you see an **Unknown publisher** popup, simply choose `Run`.
+
+  - NOTE: This is a simple installer script; there is no need to worry about any viruses. The entire code is open source, so you can review it if you wish.
+
+- Open powersehll as **Administrator** and execute below command to start the service.
+  
+    ```powershell
+    Start-Service -Name "autologin-iitk"
+    ```
+
+- et voilà! installation is done.
+
+- Please give this repo a star if you found it useful. 😁
+
+- And check out [Additional info](#additional-info).
+
+**NOTE**: In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace the old one with the new 64-bit version under the same name (nssm.exe), then do the installation.
+
+### Uninstallation
+
+- Inside the downloaded or cloned repository, navigate to the *windows* folder to find the uninstallation batch file.
+  
+- Now, right-click on the `uninstall.bat` and run it as administrator.
+
+  - NOTE: This is a simple uninstaller script; there is no need to worry about any viruses.
+
+## Linux 
 
 ### Installation
 
-- In autologin-iitk folder, navigate to the *linux* folder to find the installation script:
+- Inside the downloaded or cloned repository, open a terminal and navigate to the linux folder to locate the installation script:
   
     ```sh
     cd linux
@@ -56,7 +108,7 @@
 
 - et voilà! installation is done.
 
-- 😁 Please give this Repo a star if you found it useful.
+- Please give this repo a star if you found it useful. 😁
 
 - And check out [Additional info](#additional-info).
   
@@ -71,57 +123,56 @@
     sudo ./uninstall.sh
     ```
 
-## Windows
-
-### Installation
-
-- In autologin-iitk folder, navigate to the *windows* folder to find the installation batch file.
-  
-- Now, right-click `install.bat` and run it as administrator.
-
-- et voilà! installation is done.
-
-- 😁 Please give this Repo a star if you found it useful.
-
-- And check out [Additional info](#additional-info).
-
-**NOTE**: In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace the old one with the new 64-bit version under the same name (nssm.exe), then do the installation.
-
-### Uninstallation
-
-- In autologin-iitk folder, navigate to the *windows* folder to find the uninstallation batch file.
-  
-- Now, right-click `uninstall.bat` and run it as administrator.
-
 ## MacOS
 
 ### Installation
 
-- 🥲 🤣 I'm not rich enough to afford Apple products. You guys, please find a way to install the below command as a service or simply put it as a startup command:
+- I'm not rich enough to afford Apple products 🥲🤣. You guys, please find a way to install the below command as a service or simply put it as a startup command:
 
     ```sh
     python path-to-script/autologin-iitk.py
     ```
+- And give this repo a star mate. 😁
 
 ### Uninstallation
 
-- 😜 Simply undo what you did.
+- Simply undo what you did. 😜
 
 # Additional Info
 
-- The script is designed to self-terminate after 3 Hrs in the case of failures or when you are already connected to internet beyond refresh time (2 Hrs).
+- The script is designed to self-terminate after 3 Hrs in the case of failures or when you are already connected to internet way beyond refresh time.
 
-- There is a possibility of a maximum downtime of 15 minutes in case reboots are involved, as it doesn't store the last authentication instance. 
+- There is a possibility of a maximum downtime of 15 minutes in case reboots are involved, as it doesn't store the last authentication time. 
 
-- In such cases, you can restart the service and check logs as follow:
+- In such cases, you can simply restart the service with the former command below. To check logs, use the later command below:
 
-  - **Linux**: 
-    - In bash terminal execute - `service autologin-iitk restart`
-    - For logs, execute - `journalctl -u autologin-iitk`
+  - **Windows** (In powershell): 
   
-  - **Windows**: 
-    - In powershell execute - `Restart-Service -Name "autologin-iitk" -Force` (or) you can do it from `services.msc`
-    - For logs, execute - `Get-Content C:\Users\$envs:USERNAME\AppData\Local\auotologin-iitk\autologin-iitk.log`
+    - For restarting, execute below command (or) you can do it from `services.msc`: 
+
+        ```powershell
+        Restart-Service -Name "autologin-iitk" -Force
+        ```
+
+    - For logs, execute:
+
+        ```powershell
+        Get-Content $env:USERPROFILE\AppData\Local\autologin-iitk\autologin-iitk.log
+        ```
+
+  - **Linux** (In bash shell): 
+  
+    - For restarting, execute: 
+
+        ```sh
+        service autologin-iitk restart
+        ```
+
+    - For logs, execute:
+
+        ```sh
+        journalctl -u autologin-iitk.service -b
+        ```
 
 # People
 
