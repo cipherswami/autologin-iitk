@@ -27,7 +27,8 @@ else:
 # Configuration for logging
 logging.basicConfig(
     level=logging.INFO,
-    format=format)
+    format=format,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 #### Function declarations ####
 def check_creds(username, password, response):
