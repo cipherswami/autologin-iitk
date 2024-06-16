@@ -151,6 +151,14 @@ REM Redirect stdout and stderr to log files in the log folder
     exit /b 1
 )
 
+REM Set service to exit if failed
+"%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" AppExit 1 Exit || (
+    echo Error: Failed to set AppExit.
+    echo.
+    pause
+    exit /b 1
+)
+
 REM Set service to start automatically
 "%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" Start SERVICE_AUTO_START || (
     echo Error: Failed to set service to start automatically.
