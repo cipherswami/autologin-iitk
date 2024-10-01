@@ -31,7 +31,7 @@
 
 ### Pre Installation:
 
-- Download the latest ZIP file from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and extract it (or) Git clone the repository:
+- Git clone the repository (or) Download the latest ZIP file from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and extract it:
 
     ```sh
     git clone https://github.com/cipherswami/autologin-iitk.git
@@ -51,9 +51,39 @@
 
 - Please refer to the corresponding sections below for installation instructions:
 
-  -  [Windows](#windows)
   -  [Linux](#linux)
+  -  [Windows](#windows)
   -  [MacOS](#macos)
+
+## Linux 
+
+### Installation
+
+- Open a terminal in the repository root, then grant executable permissions and run the installer script:
+
+    ```sh
+    chmod +x linux/install.sh && sudo linux/install.sh
+    ```
+
+- et voilà! installation is done. Now, can safly remove the repository.
+  
+    ```sh
+    cd .. && rm -rf autologin-iitk
+    ```
+
+- Please give this repo a star if you found it useful. 😁
+
+- And check out [Additional info](#additional-info).
+  
+### Uninstallation
+
+- In autologin-iitk folder, navigate to the *linux* folder to find the uninstallation script.
+
+- Now, grant executable permissions and run the uninstaller script:
+
+    ```sh
+    chmod +x linux/uninstall.sh && sudo linux/uninstall.sh
+    ```
 
 ## Windows 
 
@@ -73,7 +103,7 @@
     Start-Service -Name "autologin-iitk"
     ```
 
-- et voilà! installation is done.
+- et voilà! installation is done. Now, can safly remove the repository.
 
 - Please give this repo a star if you found it useful. 😁
 
@@ -91,45 +121,11 @@
 
   - NOTE: This is a simple uninstaller script; there is no need to worry about any viruses.
 
-## Linux 
-
-### Installation
-
-- Inside the downloaded or cloned repository, open a terminal and navigate to the linux folder to find the installation script:
-  
-    ```sh
-    cd linux
-    ```
-
-- Now, grant executable permissions and run the installer script:
-
-    ```sh
-    chmod +x install.sh
-    sudo ./install.sh
-    ```
-
-- et voilà! installation is done.
-
-- Please give this repo a star if you found it useful. 😁
-
-- And check out [Additional info](#additional-info).
-  
-### Uninstallation
-
-- In autologin-iitk folder, navigate to the *linux* folder to find the uninstallation script.
-
-- Now, grant executable permissions and run the uninstaller script:
-
-    ```sh
-    chmod +x uninstall.sh
-    sudo ./uninstall.sh
-    ```
-
 ## MacOS
 
 ### Installation
 
-- I'm not rich enough to afford Apple products 🥲🤣. You guys, please find a way to install the below command as a service or simply put it as a startup command:
+- I'm not rich enough to afford Apple products 🥲. You guys, please find a way to install the below command as a service or simply put it as a startup command:
 
     ```sh
     python path-to-script/autologin-iitk.py
