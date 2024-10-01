@@ -18,7 +18,7 @@ function banner {
 
 # Variables
 SCRIPT_NAME="autologin-iitk.py"
-SCRIPT_LOCATION="../src"
+SCRIPT_LOCATION="src"
 SCRIPT_PATH="/usr/local/bin/$SCRIPT_NAME"
 PYTHON_PATH=python3
 SERVICE_NAME="${SCRIPT_NAME::-3}.service"
