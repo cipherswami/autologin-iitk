@@ -20,7 +20,7 @@ function banner {
 SCRIPT_NAME="autologin-iitk.py"
 SCRIPT_LOCATION="src"
 SCRIPT_PATH="/usr/local/bin/$SCRIPT_NAME"
-PYTHON_PATH=python3
+PYTHON_PATH=$(command -v python3)  # Updated to dynamically check for python3
 SERVICE_NAME="${SCRIPT_NAME::-3}.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 
@@ -38,6 +38,8 @@ if [ -z "$PYTHON_PATH" ]; then
     echo "[!] Python3 is not installed. Please install it and try again." 1>&2
     echo ""
     exit 1
+else
+    echo "[+] Python3 found at $PYTHON_PATH"
 fi
 
 # Display banner
