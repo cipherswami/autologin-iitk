@@ -27,15 +27,20 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM Ensure Python executable is found
-for /f "tokens=1" %%i in ('where python') do (
-    set "PYTHON_PATH=%%i"
-    goto :PythonFound
+REM Check for Python executables
+for /f "delims=" %%i in ('where python') do (
+    echo %%i | findstr /i "Microsoft\\WindowsApps" >nul
+    if errorlevel 1 (
+        set "APPLICATION_TO_RUN=%%i"
+        goto :PythonFound
+    )
 )
-echo Error: Python executable not found.
+
+echo Error: Valid Python executable not found (Dont use Microsoft Store versions).
 echo.
 pause
 exit /b 1
+
 :PythonFound
 
 REM Creating NSSM directory
@@ -49,19 +54,10 @@ if not exist "%NSSM_DIR%" (
     )
 )
 
-
-@REM Having an issue with removing NSSM_DIR from $PATH
-@REM REM Adding ENV PATH for NSSM
-@REM echo %PATH% | findstr /I /C:"NSSM" >nul
-@REM if %errorlevel% neq 0 (
-@REM     :: If nssm is not found, add NSSM_DIR to the PATH
-@REM     setx PATH "%PATH%;%NSSM_DIR%"
-@REM )
-
 REM Copy the nssm.exe to nssm directory
 if not exist "%NSSM_DIR%\nssm.exe" (
     copy /Y "%~dp0\nssm.exe" "%NSSM_DIR%" || (
-        echo Error: Failed to nssm.exe
+        echo Error: Failed to copy nssm.exe
         echo.
         pause
         exit /b 1
@@ -99,6 +95,7 @@ echo.
 
 REM Install the service using NSSM
 echo [+] Installing service ...
+echo %APPLICATION_TO_RUN%
 "%NSSM_DIR%\nssm.exe" install "%SERVICE_NAME%" "%APPLICATION_TO_RUN%" "%ARGUMENTS%" || (
     echo Error: Failed to install the service.
     echo.
@@ -167,13 +164,13 @@ REM Set service to start automatically
     exit /b 1
 )
 
-@REM REM Start the service
-@REM "%NSSM_DIR%\nssm.exe" start "%SERVICE_NAME%" || (
-@REM     echo Error: Failed to start the service.
-@REM     echo.
-@REM     pause
-@REM     exit /b 1
-@REM )
+REM Start the service
+"%NSSM_DIR%\nssm.exe" start "%SERVICE_NAME%" || (
+    echo Error: Failed to start the service.
+    echo.
+    pause
+    exit /b 1
+)
 
 echo.
 echo [#] Installation complete

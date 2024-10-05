@@ -12,32 +12,15 @@
 
 # Installation
 
-### Pre Requisites:
-
-- (Python 3) - If executing the following command in terminal ouputs python version; then you are good to go:
-
-    - Windows
-
-        ```sh
-        python --version
-        ```
-    - Linux & Mac
-
-        ```sh
-        python3 --version
-        ```
-
-- Else, download latest version of python from [here](https://www.python.org/downloads). And don't forget to add python to environment PATH variable.
-
 ### Pre Installation:
 
-- Git clone the repository (or) Download the latest ZIP file from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and extract it:
+- Git clone the repository using below command (or) Download the latest ZIP file from [here](https://codeload.github.com/cipherswami/autologin-iitk/zip/refs/heads/main), and extract it:
 
     ```sh
     git clone https://github.com/cipherswami/autologin-iitk.git
     ```
 
-- Now, go to the extracted or cloned directory. Edit the `autologin-iitk.py` file in the **src** folder to add your username and password:
+- Now, go to the cloned or extracted repository and edit the `autologin-iitk.py` file in the **src** folder to add your username & password:
 
     ```python
     ####### User section #########################
@@ -59,13 +42,20 @@
 
 ### Installation
 
-- Open a terminal in the repository root, then grant executable permissions and run the installer script:
-
+- Ensure **Python 3** is installed by verifying the version. If not, install it and then verify the version using below commands:
     ```sh
-    chmod +x linux/install.sh && sudo linux/install.sh
+    python3 --version # To check the version of python
+    ```
+    ```sh
+    sudo apt install python3  # To install for Debian-based systems
     ```
 
-- et voilà! installation is done. Now, can safly remove the repository.
+- Open a terminal in the root of the repository and install the script by running the following:
+    ```sh
+    chmod +x linux/install.sh && sudo ./linux/install.sh
+    ```
+
+- et voilà! installation is done. Now, you can safly delete the repository.
   
     ```sh
     cd .. && rm -rf autologin-iitk
@@ -77,9 +67,7 @@
   
 ### Uninstallation
 
-- In autologin-iitk folder, navigate to the *linux* folder to find the uninstallation script.
-
-- Now, grant executable permissions and run the uninstaller script:
+- Download or [clone](#pre-installation) the repository again. And open a terminal in the root of the repository. Then run the following to uninstall:
 
     ```sh
     chmod +x linux/uninstall.sh && sudo linux/uninstall.sh
@@ -89,7 +77,12 @@
 
 ### Installation
 
-- Inside the downloaded or cloned repository, navigate to the ***windows*** folder to find the installation batch file.
+- Ensure **Python 3** is installed* by verifying the version. If not, install it from [python.org](https://www.python.org/downloads/), and don't forget to **check "Add Python to PATH"** during installation. And then, verify the version:  
+  ```bash
+  python --version
+  ```
+
+- Inside repository, navigate to the ***windows*** folder** to find the installation batch file.
   
 - Now, right-click on the `install.bat` and run it as **Administrator**.
 
@@ -97,23 +90,28 @@
 
   - NOTE: This is a simple installer script; there is no need to worry about any viruses. The entire code is open source, so you can review it if you wish.
 
-- Now, open powersehll as **Administrator** and execute below command (or) use `services.msc` to start the service.
-  
-    ```powershell
-    Start-Service -Name "autologin-iitk"
-    ```
+- et voilà! installation is done. Now, you can safly delete the repository.
 
-- et voilà! installation is done. Now, can safly remove the repository.
+- Sometimes the service may exit unexpectedly. Then, you can restart/start it by opening `services.msc` (or) by running the following command:
+    ```powershell
+    # Open Powershell as Administrator
+    Restart-Service -Name "autologin-iitk" -Force   # Restarting the service
+    Start-Service -Name "autologin-iitk"            # Starting the service
+    ```
 
 - Please give this repo a star if you found it useful. 😁
 
 - And check out [Additional info](#additional-info).
 
-**NOTE**: In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace the old one with the new 64-bit version under the same name (nssm.exe), then do the installation.
+**NOTE:**  
+
+  \* Dont use the Microsoft Store's python.
+  
+  ** In the Windows folder, you will find nssm.exe (Non-Sucking Service Manager), which is used to install and manage the Python script as a service. At the time of writing, the NSSM version is 2.24. If you want, you may get the most recent version from [here](https://nssm.cc/download) and replace the old one with the new 64-bit version under the same name (nssm.exe), then do the installation.
 
 ### Uninstallation
 
-- Inside the downloaded or cloned repository, navigate to the *windows* folder to find the uninstallation batch file.
+- Download or [clone](#pre-installation) the repository again and navigate to the *windows* folder to find the uninstallation batch file.
   
 - Now, right-click on the `uninstall.bat` and run it as administrator.
 
