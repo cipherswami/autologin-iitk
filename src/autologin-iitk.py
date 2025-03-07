@@ -5,8 +5,8 @@
 ##############################################################
 
 ####### User section #########################
-username = 'FILL USERNAME'
-password = 'FILL PASSWORD'
+USERNAME = 'FILL USERNAME'
+PASSWORD = 'FILL PASSWORD'
 # NOTE: Enter webmail password, not WiFi SSO
 #############################################
 
@@ -14,157 +14,142 @@ import os
 import re
 import time
 import logging
-import tempfile
 import platform
+import subprocess
 import urllib.parse
 import urllib.request
 
+# Platform-Specific Settings
 if platform.system() == 'Linux':
-    format = '%(levelname)s - %(message)s'
-    logout_file = "/var/tmp/iitk_logout_url.txt" 
+    LOGOUT_FILE = "/var/tmp/iitk_logout_url.txt"
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
+    def log_event(message, level="INFO"):
+        getattr(logging, level.lower(), logging.info)(message)
 else:
-    format = '[%(asctime)s] %(levelname)s - %(message)s'
-    logout_file = "C:\\Windows\\Temp\\iitk_logout_url.txt"
+    LOGOUT_FILE = "C:\\Windows\\Temp\\iitk_logout_url.txt"
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
+    def log_event(message, level="INFO"):
+        getattr(logging, level.lower(), logging.info)(message)
+        event_type_map = {"INFO": "Information", "WARNING": "Warning", "ERROR": "Error"}
+        subprocess.run([
+            "powershell.exe", "-Command",
+            f'Write-EventLog -LogName Application -Source "autologin-iitk" -EntryType {event_type_map.get(level, "Information")} -EventId 999 -Message "{message}"'
+        ], shell=True)
 
-logging.basicConfig(level=logging.INFO, format=format, datefmt='%Y-%m-%d %H:%M:%S')
-
-def perform_logout(opener, LOGOUT_FILE):
+def perform_logout(opener):
+    """Attempts to log out from a previous session if a logout URL exists."""
     if os.path.exists(LOGOUT_FILE):
         with open(LOGOUT_FILE, 'r') as f:
             logout_url = f.read().strip()
         
         if logout_url:
-            logging.info(f"Attempting logout: {logout_url[-16:]}")
-            timeout = 60
-            while timeout > 0:
+            log_event(f"Attempting logout: {logout_url[-16:]}", "INFO")
+            for _ in range(12):  # Retry for 60 seconds
                 try:
                     response_html = opener.open(logout_url).read().decode('utf-8')
-                    if "<H3>You have successfully logged out</H3>" in response_html:
-                        logging.info("Previous session logged out successfully")
-                    if "https://gateway.iitk.ac.in:1003/login" in response_html:
-                        logging.info("Previous session already expired")
-                    return
+                    if "successfully logged out" in response_html or "1003/login" in response_html:
+                        log_event("Previous session logged out successfully", "INFO")
+                        return
                 except Exception as e:
-                    logging.warning(f"Logout failed, retrying: {e}")
+                    log_event(f"Logout failed, retrying: {e}", "WARNING")
                     time.sleep(5)
-                    timeout -= 5
-            logging.error("Logout attempts exhausted.")
+            log_event("Logout attempts exhausted.", "ERROR")
             exit(1)
         else:
-            logging.info("Logout URL file is empty.")
             os.remove(LOGOUT_FILE)
+            log_event("Logout URL file is empty.", "INFO")
     else:
-        logging.info("Logout file not found, skipping logout")
+        log_event("Logout file not found, skipping logout", "INFO")
 
-def check_creds(username, password, response):
-    if "Firewall authentication failed. Please try again." in response:
-        logging.critical("Please check the credentials you entered.")
-    elif "keepalive" in response:
-        return
-    else:
-        logging.critical(f"Unexpected error, Response: {response}")
-    exit(1)
+def check_login_response(response):
+    """Validates the login response to check for authentication success."""
+    if "authentication failed" in response:
+        log_event("Invalid credentials. Please check your login details.", "ERROR")
+        exit(1)
+    elif "keepalive" not in response:
+        log_event(f"Unexpected login response: {response}", "ERROR")
+        exit(1)
 
-def perform_login(opener, gateway_url, data, timeout=60):
-    login_url = gateway_url[:31]
-    login_data = urllib.parse.urlencode(data).encode('utf-8')
-    while timeout > 0:
+def perform_login(opener, captive_url):
+    """Attempts to log in to the IITK firewall authentication page."""
+    login_url = captive_url[:31]
+    login_data = urllib.parse.urlencode({
+        "4Tredir": captive_url,
+        "username": USERNAME,
+        "password": PASSWORD,
+        'magic': captive_url[-16:]
+    }).encode('utf-8')
+    
+    for _ in range(12):  # Retry for 60 seconds
         try:
-            login_response_html = opener.open(login_url, login_data).read().decode('utf-8')
-            check_creds(username, password, login_response_html)
-            logging.info(f"Connection established with URL: {login_url}")
-            return login_response_html
+            init_gateway_response = opener.open(captive_url)
+            response_html = opener.open(login_url, login_data).read().decode('utf-8')
+            check_login_response(response_html)
+            log_event(f"Login successful at {login_url}", "INFO")
+            init_gateway_response.close()
+            return response_html
         except Exception as e:
-            logging.error(f"Login error, retrying: {e}")
+            log_event(f"Login error, retrying: {e}", "ERROR")
             time.sleep(5)
-            timeout -= 5
-        except KeyboardInterrupt:
-            logging.info("Received Termination signal, exiting...")
-            exit(0)
-    logging.critical(f"Login failed with URL: {login_url}")
+    log_event("Login failed.", "ERROR")
     exit(1)
 
-def get_captive_url(opener, detector_url):
-    timeout = 60
-    while timeout > 0:
+def get_captive_url(opener):
+    """Detects the captive portal URL required for authentication."""
+    for _ in range(12):  # Retry for 60 seconds
         try:
-            captive_response_html = opener.open(detector_url).read().decode('utf-8')
-            if "url=https://support.mozilla.org/kb/captive-portal" in captive_response_html:
-                logging.info("Already connected to internet, will retry after 15 mins.")
+            response_html = opener.open('http://detectportal.firefox.com/canonical.html').read().decode('utf-8')
+            if "url=https://support.mozilla.org/kb/captive-portal" in response_html:
+                log_event("Already connected to internet, will retry after 15 mins.", "INFO")
                 time.sleep(900)  # Sleep 15 mins
                 timeout -= 5
                 continue
-            match = re.search(r'window\.location="(https://[^"]+)"', captive_response_html)
+            match = re.search(r'window\.location="(https://[^"]+)"', response_html)
             if match:
-                logging.info(f"Found Captive URL: {match.group(1)[-16:]}")
+                log_event(f"Captive URL found: {match.group(1)[-16:]}", "INFO")
                 return match.group(1)
         except Exception as e:
-            logging.error(f"Error detecting captive portal, retrying: {e}")
+            log_event(f"Captive portal detection failed, retrying: {e}", "ERROR")
             time.sleep(5)
-            timeout -= 5
-        except KeyboardInterrupt:
-            logging.info("Received Termination signal, exiting...")
-            exit(0)
-    logging.error("Captive portal detection attempts exhausted.")
-    return None
-
-def keep_alive(opener, url, timeout=60):
-    """Keep the authentication alive by periodically accessing the keepalive URL."""
-    while timeout > 0:
-        try:
-            opener.open(url)
-            dead_url = url.replace('keepalive', 'logout')
-            logging.info(f"Authentication refreshed, logout from here: {dead_url}")
-            time.sleep(7190)
-        except Exception as e:
-            logging.error(f"Can't refresh the authentication: {e}")
-            time.sleep(5)
-            timeout -= 5
-        except KeyboardInterrupt:
-            logging.info("Received Temination signal, exiting...")
-            exit(0)
-    logging.critical(f"Failed to refresh the authentication: {url}")
+    log_event("Failed to detect captive portal.", "ERROR")
     exit(1)
 
-# Main
-if __name__ == "__main__":
-    # URL Agent
+def keep_alive(opener, keepalive_url):
+    """Keeps the authentication session active by periodically refreshing it."""
+    while True:
+        try:
+            opener.open(keepalive_url)
+            log_event(f"Session replenished. Logout URL: {keepalive_url.replace('keepalive', 'logout')}", "INFO")
+            time.sleep(7190)  # Keep alive for nearly 2 hours
+        except Exception as e:
+            log_event(f"Keep-alive failed: {e}", "ERROR")
+            time.sleep(5)
+
+def main():
+    """Main execution flow for the auto-login script."""
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
-
-    # Perform initial logout
-    perform_logout(opener, logout_file)
     
-    # Get gatway URL
-    captive_url = get_captive_url(opener, 'http://detectportal.firefox.com/canonical.html')
-    
-    # Initiate the connection
-    init_gateway_response = opener.open(captive_url)
-    data = {"4Tredir": captive_url, "username": username, "password": password, 'magic': captive_url[-16:]}
-    login_response_html = perform_login(opener, captive_url, data)
+    perform_logout(opener)
 
-    # Closing connections
-    init_gateway_response.close()
+    captive_url = get_captive_url(opener)
+    response_html = perform_login(opener, captive_url)
 
-    #### Keep Alive Section ####
-    # Fetch keep-alive URL
+    keepalive_match = re.search(r'window\.location\s*=\s*"([^"]+)"', response_html)
+    if keepalive_match:
+        keepalive_url = keepalive_match.group(1)
+        with open(LOGOUT_FILE, 'w') as f:
+            f.write(keepalive_url.replace('keepalive', 'logout'))
+        log_event(f"Keep-Alive received. Logout URL: {keepalive_url.replace('keepalive', 'logout')}", "INFO")
+        time.sleep(7190)  # Wait for nearly 2 hrs
+        keep_alive(opener, keepalive_url)
+    else:
+        log_event("No keep-alive URL found. Session will not persist.", "ERROR")
+        exit(1)
+
+if __name__ == "__main__":
     try:
-        keepalive_matches = re.findall(r'window\.location\s*=\s*"([^"]+)"', login_response_html)
-        if keepalive_matches:
-            keep_alive_url = keepalive_matches[0]
-            logout_url = keep_alive_url.replace('keepalive', 'logout')
-            with open(logout_file, 'w') as f:
-                f.write(logout_url)
-            logging.info(f"Received Keep alive token, logout from here: {logout_url}")
-            time.sleep(7190) # wait for nearly 2 hrs
-        else:
-            logging.error("No Keep alive URL found, will exit after this session.")
-            logging.critical(f"Login Response: {login_response_html}")
-            exit(1)
+        main()
     except KeyboardInterrupt:
-        logging.info("Received Temination signal, exiting...")
+        log_event("Script terminated by user.", "INFO")
         exit(0)
-    # Keep alive refresher
-    keep_alive(opener, keep_alive_url)
-    #### End: Keep Alive Section ####
-    exit(0)

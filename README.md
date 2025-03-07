@@ -24,8 +24,8 @@
 
     ```python
     ####### User section #########################
-    username = 'FILL USERNAME'
-    password = 'FILL PASSWORD'
+    USERNAME = 'FILL USERNAME'
+    PASSWORD = 'FILL PASSWORD'
     # NOTE: Enter webmail password, not WiFi SSO
     #############################################
     ```
@@ -92,13 +92,6 @@
 
 - et voilà! installation is done. Now, you can safly delete the repository.
 
-- Sometimes the service may exit unexpectedly. Then, you can restart/start it by opening `services.msc` (or) by running the following command:
-    ```powershell
-    # Open Powershell as Administrator
-    Restart-Service -Name "autologin-iitk" -Force   # Restarting the service
-    Start-Service -Name "autologin-iitk"            # Starting the service
-    ```
-
 - Please give this repo a star if you found it useful. 😁
 
 - And check out [Additional info](#additional-info).
@@ -151,8 +144,7 @@
     - For logs, execute:
 
         ```powershell
-        Get-Content $env:USERPROFILE\AppData\Local\autologin-iitk\autologin-iitk.log -Wait
-
+        Get-EventLog -LogName Application -Source "autologin-iitk"
         ```
 
   - **Linux** (In bash shell): 
