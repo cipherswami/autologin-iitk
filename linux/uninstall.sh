@@ -38,6 +38,7 @@ echo ""
 # Stop the systemd service
 echo "[-] Stopping the $SERVICE_NAME"
 if systemctl stop "$SERVICE_NAME"; then
+    rm -rf /var/tmp/iitk_logout_url.txt
     echo "[+] Successfully stopped $SERVICE_NAME"
 else
     echo "[!] Failed to stop $SERVICE_NAME or it may not be running" 1>&2
