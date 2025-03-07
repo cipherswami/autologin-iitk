@@ -26,7 +26,7 @@ REM Stop and remove the service using NSSM
 "%NSSM_DIR%\nssm.exe" stop "%SERVICE_NAME%" > nul 2>&1
 
 REM Removing Temp file
-del /f /q "C:\Windows\Temp\iitk_logout.txt"
+del /f /q "C:\Windows\Temp\iitk_logout_url.txt"
 
 "%NSSM_DIR%\nssm.exe" remove "%SERVICE_NAME%" confirm > nul 2>&1 || (
     echo Error: Failed to remove the service.

@@ -138,9 +138,7 @@
 
 - The script is designed to self-terminate after 3 Hrs in the case of failures or when you are already connected to internet way beyond refresh time.
 
-- There is a possibility of a maximum downtime of 15 minutes in case reboots are involved, as it doesn't store the last authentication time. 
-
-- In such cases, you can simply restart the service with the below command (former). And for checking logs, you can use the below command (latter):
+- If the service stops working, you can restart it using the first command below. And to check logs, use the second command.
 
   - **Windows** (In powershell): 
   
@@ -153,7 +151,8 @@
     - For logs, execute:
 
         ```powershell
-        Get-Content $env:USERPROFILE\AppData\Local\autologin-iitk\autologin-iitk.log
+        Get-Content $env:USERPROFILE\AppData\Local\autologin-iitk\autologin-iitk.log -Wait
+
         ```
 
   - **Linux** (In bash shell): 
