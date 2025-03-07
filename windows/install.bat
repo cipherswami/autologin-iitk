@@ -119,35 +119,6 @@ REM Set startup directory for the service
     exit /b 1
 )
 
-REM Redirect stdout and stderr to log files in the log folder
-"%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" AppStderr "%INSTALL_DIR%\autologin-iitk.log" || (
-    echo Error: Failed to redirect stderr to log file.
-    echo.
-    pause
-    exit /b 1
-)
-
-"%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" AppStdout "%INSTALL_DIR%\autologin-iitk.log" || (
-    echo Error: Failed to redirect stdout to log file.
-    echo.
-    pause
-    exit /b 1
-)
-
-"%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" AppStdoutCreationDisposition 2 || (
-    echo Error: Failed to set AppStdoutCreationDisposition.
-    echo.
-    pause
-    exit /b 1
-)
-
-"%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" AppStderrCreationDisposition 2 || (
-    echo Error: Failed to set AppStderrCreationDisposition.
-    echo.
-    pause
-    exit /b 1
-)
-
 REM Set service to exit if failed
 "%NSSM_DIR%\nssm.exe" set "%SERVICE_NAME%" AppExit 1 Exit || (
     echo Error: Failed to set AppExit.
