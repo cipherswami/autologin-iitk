@@ -22,21 +22,29 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM Removing Temp file
-DEL /F /Q "C:\Windows\Temp\iitk_logout_url.txt" 2>nul
-
-REM Stop and remove the service using NSSM
-"%NSSM_DIR%\nssm.exe" stop "%SERVICE_NAME%" > nul 2>&1
-"%NSSM_DIR%\nssm.exe" remove "%SERVICE_NAME%" confirm > nul 2>&1 || (
-    echo Error: Failed to remove the service.
+REM Check if the service exists  
+sc query "%SERVICE_NAME%" >nul 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    REM Stop the service using NSSM  
+    "%NSSM_DIR%\nssm.exe" stop "%SERVICE_NAME%" >nul 2>&1 || (
+        echo Error: Failed to stop the service.
+        pause
+        exit /b 1
+    )
     echo.
-    pause
-    exit /b 1
-)
+    echo [+] Service stopped successfully.
+    echo.
 
-echo.
-echo [+] Service removed successfully.
-echo.
+    REM Remove the service using NSSM  
+    "%NSSM_DIR%\nssm.exe" remove "%SERVICE_NAME%" confirm >nul 2>&1 || (
+        echo Error: Failed to remove the service.
+        pause
+        exit /b 1
+    )
+    echo.
+    echo [+] Service removed successfully.
+    echo.
+) 
 
 REM Delete installation directory
 if exist "%INSTALL_DIR%" (

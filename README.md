@@ -23,11 +23,11 @@
 - Now, go to the cloned or extracted repository and edit the `autologin-iitk.py` file in the **src** folder to add your username & password:
 
     ```python
-    ####### User section #########################
-    USERNAME = 'FILL USERNAME'
-    PASSWORD = 'FILL PASSWORD'
-    # NOTE: Enter webmail password, not WiFi SSO
-    #############################################
+    ################ User section ################
+    # NOTE: Enter webmail password, not WiFi SSO #
+    USERNAME = 'FILL_USERNAME'
+    PASSWORD = 'FILL_PASSWORD'
+    ##############################################
     ```
 
 ### Main Installation
@@ -138,13 +138,13 @@
     - For restarting (powershell must be runas **Administrator**), execute below command (or) you can do it from `services.msc`: 
 
         ```powershell
-        Restart-Service -Name "autologin-iitk" -Force
+        rs "autologin-iitk" -f
         ```
 
     - For logs, execute:
 
         ```powershell
-        Get-EventLog -LogName Application -Source "autologin-iitk"
+        gc "$env:LOCALAPPDATA\autologin-iitk\autologin-iitk.log"
         ```
 
   - **Linux** (In bash shell): 
