@@ -138,13 +138,13 @@
     - For restarting (powershell must be runas **Administrator**), execute below command (or) you can do it from `services.msc`: 
 
         ```powershell
-        rs "autologin-iitk" -f
+        Restart-Service "autologin-iitk" -f
         ```
 
     - For logs, execute:
 
         ```powershell
-        gc "$env:LOCALAPPDATA\autologin-iitk\autologin-iitk.log"
+        Get-Content "$env:ProgramFiles\autologin-iitk\autologin-iitk.log"
         ```
 
   - **Linux** (In bash shell): 

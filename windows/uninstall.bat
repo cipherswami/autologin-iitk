@@ -10,8 +10,8 @@ echo.
 setlocal
 
 set "SERVICE_NAME=autologin-iitk"
-set "INSTALL_DIR=C:\Users\%USERNAME%\AppData\Local\%SERVICE_NAME%"
-set "NSSM_DIR=C:\Users\%USERNAME%\AppData\Local\nssm"
+set "INSTALL_DIR=%ProgramFiles%\%SERVICE_NAME%"
+set "NSSM_DIR=%ProgramData%\nssm"
 
 REM Check if running as administrator
 net session >nul 2>&1
@@ -31,7 +31,6 @@ IF %ERRORLEVEL% EQU 0 (
         pause
         exit /b 1
     )
-    echo.
     echo [+] Service stopped successfully.
     echo.
 
@@ -41,7 +40,6 @@ IF %ERRORLEVEL% EQU 0 (
         pause
         exit /b 1
     )
-    echo.
     echo [+] Service removed successfully.
     echo.
 ) 

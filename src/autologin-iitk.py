@@ -27,6 +27,9 @@ else:
     LOGOUT_FILE = "C:\\Windows\\Temp\\iitk_logout_url.txt"
     LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
 
+# Global Settings
+DATE_FORMAT = '%b %d %H:%M:%S'
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=DATE_FORMAT)
 
 # Function: Perform Prelogout
 def perform_prelogout(opener):
@@ -141,9 +144,6 @@ def keep_alive(opener, response_html):
 # Main Execution Flow
 def main():
     """Main execution flow for the auto-login script."""
-    # Initialize logger
-    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
-
     # Initialize browser agent
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
