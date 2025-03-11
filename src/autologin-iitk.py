@@ -77,6 +77,7 @@ def perform_login(opener, captive_url):
             response_html = opener.open(login_url, login_data).read().decode('utf-8')  # Submit login form
             if "authentication failed" in response_html:
                 logging.error("Invalid credentials. Please check your login details.")
+                time.sleep(10)
                 exit(1)
             logging.info(f"Login successful at {login_url}")
             init_gateway_response.close()
