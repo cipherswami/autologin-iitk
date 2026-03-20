@@ -137,7 +137,17 @@ def keep_alive(opener, response_html):
                 logging.info(f"Session replenished. Logout URL: {logout_url}")
             except Exception as e:
                 logging.error(f"Keep-alive failed: {e}")
-                time.sleep(5)  # Retry after 5 seconds
+                for _ in range(12):  # Retry for 60 seconds
+                    time.sleep(5)  # Retry after 5 seconds
+                    try:
+                        opener.open(keepalive_url)  # Retry
+                        logging.info(f"Session replenished. Logout URL: {logout_url}")
+                        break
+                    except Exception as e:
+                        logging.error(f"Keep-alive failed again: {e}, Retrying...")
+                else:
+                    logging.error(f"Keep-alive keeps failing, Exiting...")
+                    exit(1)
     else:
         logging.error("No keep-alive URL found. Session will not persist.")
         exit(1)
