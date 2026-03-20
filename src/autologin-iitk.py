@@ -10,6 +10,7 @@ USERNAME = 'FILL_USERNAME'
 PASSWORD = 'FILL_PASSWORD'
 ##############################################
 
+
 # Imports
 import os
 import re
@@ -119,7 +120,11 @@ def keep_alive(opener, response_html):
     """Extracts keep-alive URL and keeps the authentication session active."""
     keepalive_match = re.search(r'window\.location\s*=\s*"([^"]+)"', response_html)
     
-    if keepalive_match:
+    if not keepalive_match:
+        logging.error("No keep-alive URL found. Session will not persist.")
+        return False # return, let retry happen in main()
+    else:
+    
         keepalive_url = keepalive_match.group(1)  # Extract keep-alive URL
         logout_url = keepalive_url.replace('keepalive', 'logout')  # Generate logout URL
 
@@ -137,10 +142,8 @@ def keep_alive(opener, response_html):
                 logging.info(f"Session replenished. Logout URL: {logout_url}")
             except Exception as e:
                 logging.error(f"Keep-alive failed: {e}")
-                time.sleep(5)  # Retry after 5 seconds
-    else:
-        logging.error("No keep-alive URL found. Session will not persist.")
-        exit(1)
+                # time.sleep(5)  # Retry after 5 seconds
+                return False # trigger retry in main()
 
 # Main Execution Flow
 def main():
@@ -149,13 +152,16 @@ def main():
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
 
-    # Perform prelogout and login
-    perform_prelogout(opener)
-    captive_url = get_captive_url(opener)
-    response_html = perform_login(opener, captive_url)
+    while True:
+        
+        perform_prelogout(opener) # Perform prelogout and login
+        captive_url = get_captive_url(opener) # Get captive portal URL
+        response_html = perform_login(opener, captive_url) # Perform login
 
-    # Start keep-alive mechanism
-    keep_alive(opener, response_html)
+        # Start keep-alive mechanism
+        keep_alive(opener, response_html)
+        logging.info("Restarting main script...")
+        time.sleep(5)
 
 
 # Entry Point
